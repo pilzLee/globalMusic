@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="en">
+  <%- include('./head.ejs', {title: 'Admin - singer' }); %>
+  <body>
+    <div class="container">
+      <a href="/">Trang chủ</a>
+      <h1>Danh sách người dùng</h1>
+      <div class="mt-5 mb-5">
+        <button
+          type="button"
+          class="btn btn-primary"
+          data-bs-toggle="modal"
+          data-bs-target="#addModal"
+        >
+          Thêm tài khoản
+        </button>
+      </div>
+      <table class="table table-hover">
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Name</th>
+            <th>Username</th>
+            <th>Avatar</th>
+            <th>Password</th>
+            <th>Is supper user</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody id="content"></tbody>
+      </table>
+
+      <!-- Modal -->
+      <div class="modal fade" id="addModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title">Thêm người dùng</h5>
+              <button
+                type="button"
+                class="btn-close"
+                data-bs-dismiss="modal"
+                aria-label="Close"
+              ></button>
+            </div>
+            <p id="msg" class="ml-2"></p>
+            <div class="modal-body">
+              <label>Name</label>
+              <input id="name" class="form-control" />
+              <label>Username</label>
+              <input id="username" class="form-control" />
+              <label>Password</label>
+              <input id="password" type="password" class="form-control" />
+            </div>
+            <div class="modal-footer">
+              <button
+                type="button"
+                class="btn btn-secondary"
+                data-bs-dismiss="modal"
+              >
+                Close
+              </button>
+              <button type="button" class="btn btn-primary" id="submit">
+                Submit
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      const contentEl = $("#content");
+      const onDelete = async (id, cb) => {
+        try {
+          await $.ajax({
+            url: `/user/delete/${id}`,
+            method: "DELETE",
+          });
+        } catch (err) {
+          window.alert(err.responseJSON.message);
+        }
+        await fetchData();
+      };
+      const fetchData = async () => {
+        const response = await $.ajax({
+          url: "/user/list",
+          type: "GET",
+        });
+
+        const userEls = response.data
+          .map(
+            (user) => `<tr>
+              <td>${user.id}</td>
+              <td>${user.name}</td>
+              <td>${user.username}</td>
+              <td>${user.avatar}</td>
+              <td>${user.password}</td>
+              <td>${user.is_supper_user ? 'true' : 'false'}</td>
+              <td>
+                <button class="btn btn-danger" onclick="onDelete(${user.id})">delete</button>
+              </td>
+            </tr>`
+          )
+          .join("");
+
+        contentEl.html(userEls);
+      };
+      $(function () {
+        fetchData();
+
+        $("#submit").click(async function () {
+          const name = $("#name").val();
+          const username = $("#username").val();
+          const password = $("#password").val();
+
+          if (!name || !username || !password) {
+            alert("Nhập đủ hết cho bố m =)))");
+            return;
+          }
+
+          try {
+            const res = await $.ajax({
+              url: "/user/create",
+              type: "POST",
+              data: {
+                name,
+                username,
+                password,
+              },
+            });
+            await fetchData();
+            $("#msg").text("uploaded !");
+          } catch (err) {
+            $("#msg").text(err.responseJSON.message || "ngu");
+          }
+        });
+      });
+    </script>
+  </body>
+</html>

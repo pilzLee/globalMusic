@@ -1,0 +1,32 @@
+.border5px{
+    border-radius: 5px;
+}
+.item-hover{
+    opacity: .8;
+    height: 370px;
+    overflow: hidden;
+}
+.item-hover:hover{
+    opacity: 1;
+    transform: scale(1.02);
+    cursor: pointer;
+    transition: .4s;
+}
+.item-hover-sm{
+    opacity: .8;
+}
+.item-hover-sm:hover{
+    opacity: 1;
+    transform: scale(1.02);
+    cursor: pointer;
+    transition: .4s;
+}
+.more{
+    background: none;
+    color: white;
+    border: none;
+    margin-left: 48%;
+}
+.more:hover{
+    text-decoration: underline;
+}

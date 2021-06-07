@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="en">
+  <%- include('./head.ejs', {title: 'Admin - album' }); %>
+  <body>
+    <div class="container">
+      <a href="/">Trang chủ</a>
+      <h1>Danh sách Albums</h1>
+      <div class="mt-5 mb-5">
+        <button
+          type="button"
+          class="btn btn-primary"
+          data-bs-toggle="modal"
+          data-bs-target="#addModal"
+        >
+          Thêm album
+        </button>
+      </div>
+      <table class="table table-hover">
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Name</th>
+            <th>Thumbnail</th>
+            <th>Released date</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody id="content"></tbody>
+      </table>
+
+      <!-- Modal -->
+      <div class="modal fade" id="addModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title">Thêm album</h5>
+              <button
+                type="button"
+                class="btn-close"
+                data-bs-dismiss="modal"
+                aria-label="Close"
+              ></button>
+            </div>
+            <p id="msg" class="ml-2"></p>
+            <div class="modal-body">
+              <label>Name</label>
+              <input id="name" class="form-control" />
+              <label>thumbnail</label>
+              <input id="upload" class="form-control" type="file" />
+              <br />
+              <br />
+              <p>Singer *</p>
+              <select id="singer"></select>
+              <br />
+              <br />
+              <label>Released date</label>
+              <input id="date" class="form-control" type="date" />
+            </div>
+            <div class="modal-footer">
+              <button
+                type="button"
+                class="btn btn-secondary"
+                data-bs-dismiss="modal"
+              >
+                Close
+              </button>
+              <button type="button" class="btn btn-primary" id="submit">
+                Submit
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      const contentEl = $("#content");
+      const fetchSingerData = async () => {
+        const response = await $.ajax({
+          url: "/singer/list",
+          method: "GET",
+        });
+
+        const els = response.data.data
+          .map(
+            (singer) => `<option value="${singer.id}">${singer.name}</option>`
+          )
+          .join("");
+        $("#singer").html(els);
+      };
+      fetchSingerData();
+
+      const onDelete = async (id, cb) => {
+        try {
+          await $.ajax({
+            url: `/album/delete/${id}`,
+            method: "DELETE",
+          });
+        } catch (err) {
+          window.alert(err.responseJSON.message);
+        }
+        await fetchData();
+      };
+
+      const fetchData = async () => {
+        const response = await $.ajax({
+          url: "/album/list",
+          type: "GET",
+        });
+
+        const albumEls = response.data.data
+          .map(
+            (album) => `<tr>
+              <td>${album.id}</td>
+              <td>${album.name}</td>
+              <td>${album.url}</td>
+              <td>${album.released_date}</td>
+              <td>
+                <button class="btn btn-danger" onclick="onDelete(${album.id})">delete</button>
+              </td>
+            </tr>`
+          )
+          .join("");
+
+        contentEl.html(albumEls);
+      };
+
+      $(function () {
+        fetchData();
+        let file;
+        $("#upload").change(function () {
+          file = this.files[0];
+        });
+
+        $("#submit").click(async function () {
+          const name = $("#name").val();
+          const singerId = $("#singer").val();
+          const date = $("#date").val();
+
+          if (!name || !singer || !date) {
+            alert("Nhập đủ hết cho bố m =)))");
+            return;
+          }
+
+          try {
+            const res = await $.ajax({
+              url: "/album/create",
+              type: "POST",
+              data: {
+                name,
+                singerId,
+                date,
+              },
+            });
+            const { id } = res;
+            const formData = new FormData();
+            formData.append("thumbnail", file, file.fileName);
+            await $.ajax({
+              url: `/album/thumbnail/${id}`,
+              type: "POST",
+              data: formData,
+              enctype: "multipart/form-data",
+              processData: false,
+              contentType: false,
+              cache: false,
+            });
+            await fetchData();
+            $("#msg").text("uploaded !");
+          } catch (err) {
+            $("#msg").text(err.responseJSON.message || "ngu");
+          }
+        });
+      });
+    </script>
+  </body>
+</html>

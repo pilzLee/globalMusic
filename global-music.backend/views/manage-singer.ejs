@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="en">
+  <%- include('./head.ejs', {title: 'Admin - singer' }); %>
+  <body>
+    <div class="container">
+      <a href="/">Trang chủ</a>
+      <h1>Danh sách ca sĩ</h1>
+      <div class="mt-5 mb-5">
+        <button
+          type="button"
+          class="btn btn-primary"
+          data-bs-toggle="modal"
+          data-bs-target="#addModal"
+        >
+          Thêm ca sĩ
+        </button>
+      </div>
+      <table class="table table-hover">
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Name</th>
+            <th>Bod</th>
+            <th>Information</th>
+            <th>Avatar</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody id="content"></tbody>
+      </table>
+
+      <!-- Modal -->
+      <div class="modal fade" id="addModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title">Add singer</h5>
+              <button
+                type="button"
+                class="btn-close"
+                data-bs-dismiss="modal"
+                aria-label="Close"
+              ></button>
+            </div>
+            <p id="msg" class="ml-2"></p>
+            <div class="modal-body">
+              <label>Name</label>
+              <input id="name" class="form-control" />
+              <label>Avatar</label>
+              <input id="file" type="file" class="form-control" />
+              <label>dob</label>
+              <input id="dob" class="form-control" type="date" />
+              <label>info</label>
+              <textarea id="info" class="form-control" rows="8"></textarea>
+            </div>
+            <div class="modal-footer">
+              <button
+                type="button"
+                class="btn btn-secondary"
+                data-bs-dismiss="modal"
+              >
+                Close
+              </button>
+              <button type="button" class="btn btn-primary" id="submit">
+                Submit
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      const contentEl = $("#content");
+      const onDelete = async (id, cb) => {
+        try {
+          await $.ajax({
+            url: `/singer/delete/${id}`,
+            method: "DELETE",
+          });
+        } catch (err) {
+          window.alert(err.responseJSON.message);
+        }
+        await fetchData();
+      };
+      const fetchData = async () => {
+        const response = await $.ajax({
+          url: "/singer/list",
+          type: "GET",
+        });
+
+        const singerEls = response.data.data
+          .map(
+            (singer) => `<tr>
+              <td>${singer.id}</td>
+              <td>${singer.name}</td>
+              <td>${singer.dob}</td>
+              <td>${singer.info}</td>
+              <td>${singer.avatar}</td>
+              <td>
+                <button class="btn btn-danger" onclick="onDelete(${singer.id})">delete</button>
+              </td>
+            </tr>`
+          )
+          .join("");
+
+        contentEl.html(singerEls);
+      };
+      $(function () {
+        fetchData();
+
+        let file = "";
+        $("#file").change(function () {
+          file = this.files[0];
+        });
+
+        $("#submit").click(async function () {
+          const name = $("#name").val();
+          const dob = $("#dob").val();
+          const info = $("#info").val();
+
+          if (!name || !file || !dob || !info) {
+            alert("Nhập đủ hết cho bố m =)))");
+            return;
+          }
+
+          try {
+            const res = await $.ajax({
+              url: "/singer/create",
+              type: "POST",
+              data: {
+                name,
+                dob,
+                info,
+              },
+            });
+            const { data } = res;
+            const formData = new FormData();
+            formData.append("avatar", file, file.fileName);
+            await $.ajax({
+              url: `/singer/avatar/${data}`,
+              type: "POST",
+              data: formData,
+              enctype: "multipart/form-data",
+              processData: false,
+              contentType: false,
+              cache: false,
+            });
+            await fetchData();
+            $("#msg").text("uploaded !");
+          } catch (err) {
+            $("#msg").text(err.responseJSON.message || "ngu");
+          }
+        });
+      });
+    </script>
+  </body>
+</html>

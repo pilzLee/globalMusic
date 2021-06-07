@@ -1,0 +1,40 @@
+.avatar-file {
+  position: absolute;
+  top: 260px;
+  left: 115px;
+  width: 120px;
+  padding-top: 1px;
+  background: none;
+  outline: none;
+  border: none;
+  color: black;
+}
+.avatar-img {
+  position: relative;
+}
+.avatar-file::-webkit-file-upload-button {
+  visibility: hidden;
+}
+.avatar-file::before {
+  border: none;
+  content: "Change avatar";
+  display: inline-block;
+  outline: none;
+  white-space: nowrap;
+//   -webkit-user-select: none;
+  cursor: pointer;
+//   text-shadow: 1px 1px #fff;
+  font-weight: 700;
+  font-size: 10pt;
+}
+.avatar-file:hover::before {
+  border: none;
+}
+.btn-update{
+    outline: none;
+    background: none;
+    border: none;
+    color: white;
+    left: 97px;
+    position: absolute;
+}

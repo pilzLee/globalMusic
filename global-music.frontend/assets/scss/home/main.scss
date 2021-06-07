@@ -1,0 +1,29 @@
+.right-content {
+  background-image: url('@/assets/images/common/zma.svg');
+}
+
+.container-custom {
+  min-height: 100vh;
+  z-index: 1;
+  padding-bottom: 15%;
+}
+.slick-dots li.slick-active button:before,
+.slick-dots li button:before {
+  color: #007acc !important;
+}
+.slick-dots li.slick-active button:before {
+  color: #007acc !important;
+}
+.handpointer:hover{
+  cursor: pointer;
+}
+
+a {
+  &:hover {
+    text-decoration: none;
+  }
+}
+
+.pre-info {
+  white-space: pre-line;
+}

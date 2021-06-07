@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+  <%- include('./head.ejs', {title: 'Admin - Upload' }); %>
+  <body>
+    <div class="container pt-5 pb-5">
+      <a href="/">Trang chủ</a> <br/>
+      <a href="/manage-music">Danh sách nhạc</a>
+      <h1>Upload</h1>
+      <form>
+        <p>Title *</p>
+        <input id="title" type="text" />
+        <p>Singer *</p>
+        <select id="singer"></select>
+        <p>Music type *</p>
+        <select id="musicType"></select>
+        <p>Album</p>
+        <select id="album"></select>
+        <p>Lyrics *</p>
+        <textarea id="lyrics" rows="10" cols="100"></textarea>
+        <br />
+        <br />
+        <p>file mp3 *</p>
+        <input id="upload" type="file" name="mp3" />
+        <button id="button" type="button">upload</button>
+        <p id="msg"></p>
+      </form>
+    </div>
+    <script>
+      const fetchSingerData = async () => {
+        const response = await $.ajax({
+          url: "/singer/list",
+          method: "GET",
+        });
+
+        const els = response.data.data
+          .map(
+            (singer) => `<option value="${singer.id}">${singer.name}</option>`
+          )
+          .join("");
+        $("#singer").html(els);
+      };
+      const fetchMusicTypeData = async () => {
+        const response = await $.ajax({
+          url: "/music-type/list",
+          method: "GET",
+        });
+
+        const els = response.data
+          .map(
+            (singer) => `<option value="${singer.id}">${singer.name}</option>`
+          )
+          .join("");
+        $("#musicType").html(els);
+      };
+      const fetchAlbumData = async () => {
+        const response = await $.ajax({
+          url: "/album/list",
+          method: "GET",
+        });
+
+        const els = response.data.data
+          .map(
+            (singer) => `<option value="${singer.id}">${singer.name}</option>`
+          )
+          .concat('<option value="0" selected>None</option>')
+          .reverse()
+          .join("");
+        $("#album").html(els);
+      };
+      fetchAlbumData();
+      fetchSingerData();
+      fetchMusicTypeData();
+
+      $(function () {
+        let file;
+        $("#upload").change(function () {
+          file = this.files[0];
+        });
+        $("#button").click(async function () {
+          let title = $("#title").val();
+          let singer = $("#singer").val();
+          let album = $("#album").val();
+          let musicType = $("#musicType").val();
+          let lyrics = $("#lyrics").val();
+
+          if (!title || !file || !singer || !lyrics) {
+            alert("Nhập đủ hết cho bố m =)))");
+            return;
+          }
+
+          const res = await $.ajax({
+            url: "/title",
+            type: "POST",
+            data: {
+              title,
+              singer,
+              album,
+              musicType,
+              lyrics,
+            },
+          });
+          const { id } = res;
+          const formData = new FormData();
+          formData.append("mp3", file, file.fileName);
+          await $.ajax({
+            url: `/mp3/${id}`,
+            type: "POST",
+            data: formData,
+            enctype: "multipart/form-data",
+            processData: false,
+            contentType: false,
+            cache: false,
+          });
+          $("#msg").text("uploaded !");
+          $("#title").val("");
+        });
+      });
+    </script>
+  </body>
+</html>

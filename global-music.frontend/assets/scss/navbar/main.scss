@@ -1,0 +1,28 @@
+.navbar-custom{
+    background-color: transparent;
+}
+.dropdown-menu{
+    top: 2.9rem;
+    left: -4.9rem;
+    background-color: #7693df;
+}
+.dropdown-item{
+    color: aliceblue;
+    outline: 0;
+}
+.dropdown-item:hover{
+    color: white;
+    .dropdown-menu{
+        background-color: #b993df;
+    }
+    background-color: #7693df;
+}
+.nav-link{
+    outline: 0;
+}
+.scale{
+    transform: scale(1.8);
+}
+.dropdown-toggle::after{
+    display: none;
+}

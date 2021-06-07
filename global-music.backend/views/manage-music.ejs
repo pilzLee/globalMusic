@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+  <%- include('./head.ejs', {title: 'Admin - Music' }); %>
+  <body>
+    <div class="container">
+      <div class="mt-5 mb-4">
+        <a href="/">Trang chủ</a> <br />
+        <a href="/upload-music">Upload music</a>
+      </div>
+
+      <h1>List Musics</h1>
+      <table class="table table-hover">
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Title</th>
+            <th>File</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody id="content"></tbody>
+      </table>
+    </div>
+
+    <script>
+      const contentEl = $("#content");
+      const onDelete = async (id, cb) => {
+        try {
+          await $.ajax({
+            url: `/music/delete/${id}`,
+            method: "DELETE",
+          });
+        } catch (err) {
+          window.alert(err.responseJSON.message);
+        }
+        await fetchData();
+      };
+      const fetchData = async () => {
+        const response = await $.ajax({
+          url: "/music/list",
+          type: "GET",
+        });
+
+        const musicEls = response.data
+          .map(
+            (music) => `<tr>
+              <td>${music.id}</td>
+              <td>${music.title}</td>
+              <td>${music.url}</td>
+              <td>
+                <button class="btn btn-danger" onclick="onDelete(${music.id})">delete</button>
+              </td>
+            </tr>`
+          )
+          .join("");
+
+        contentEl.html(musicEls);
+      };
+      fetchData();
+    </script>
+  </body>
+</html>

@@ -1,0 +1,25 @@
+.hidecontent{
+    opacity: 0.05;
+    .newbg{
+        background-color: #030007 !important;
+    }
+    input {
+        pointer-events: none;
+    }
+    button{
+        pointer-events: none;
+    }
+    margin-bottom: 60vh;
+}
+.newbg{
+    background-color: #170f23;
+    height: max-content;
+    min-height: 100vh;
+}
+.newbg-form{
+    background-color: #2f2739;
+    color: #ccc !important;
+    input{
+        background-color: #d9d1e4;
+    }
+}

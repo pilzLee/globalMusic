@@ -1,0 +1,79 @@
+.footerplay {
+  position: fixed;
+  width: 100vw;
+  left: 0;
+  bottom: 0;
+  // background-color: #120c1c;
+  background-size: cover;
+  background-repeat: no-repeat;
+  background-position: center;
+  background-image: url('@/assets/images/common/zma.png');
+  color: white;
+  height: 14%;
+  z-index: 1;
+  // border-top: 0.5px solid #3b3249;
+  border: none;
+  audio{
+    outline: none;
+    opacity: 1;
+  }
+}
+.img-spin {
+  animation-name: spin;
+  animation-duration: 5000ms;
+  animation-iteration-count: infinite;
+  animation-timing-function: linear;
+  height: 75px;
+  width: 75px;
+}
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+.button-custom {
+  button {
+    outline: none;
+    background: #120c1c;
+    font-size: 20px;
+    border: none;
+    margin-top: -10px;
+  }
+}
+.audio-footer {
+  //custom audio player
+  button {
+    padding: 0;
+    border: 0;
+    background: transparent;
+    cursor: pointer;
+    outline: none;
+    width: 40px;
+    height: 40px;
+    float: left;
+  }
+  .audio-player-container {
+    --seek-before-width: 0%;
+    --volume-before-width: 100%;
+    --buffered-width: 0%;
+    position: relative;
+    margin: 100px 2.5% auto 2.5%;
+    width: 95%;
+    max-width: 500px;
+    height: 85px;
+    // background: #fff;
+    // background: #120c1c;
+    color: white;
+    margin-top: 0;
+    top: -10px;
+    audio::-webkit-media-controls-enclosure {
+      background: none;
+    }
+    audio {
+      width: 100%;
+    }
+  }
+}
